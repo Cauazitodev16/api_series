@@ -1,6 +1,26 @@
-GET http://127.0.0.1:8000/soma/7/5 HTTP/1.1 
+### Variáveis de amiente
 
+@base_url = http://127.0.0.1:8000
 
-###
+## Teste de conexão com a API
 
-GET http://127.0.0.1:8000/adicao/7/5 HTTP/1.1
+GET {{base_url}}/ HTTP/1.1
+Accept: application/json
+
+### Criação de uma série
+
+POST {{base_url}}/ HTTP/1.1
+Content-Type: application/json
+
+{
+   "titulo": "Rick and Morty",
+   "descricao": "Avô e neto em altas aventuras interdimensionais.",
+   "ano_lancamento": 2013                                          
+}
+
+### Obtenção de todas as séries
+
+GET {{base_url}}/series HTTP/1.1
+Accept: application/json
+
+PUT {}
