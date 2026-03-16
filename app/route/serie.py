@@ -21,13 +21,25 @@ async def listar_series(db: Session = Depends(get_db)):
 
 @serie.delete("/deletar/{id}")
 async def deletar_serie(id: int, db: Session= Depends(get_db)):
-    db.query(SerieModel).filter(SerieModel.id == id).first()
-    if not serie:
+    id = db.query(SerieModel).filter(SerieModel.id == id).first()
+    if not id:
         return("Não foi localizado o id")
-    db.delete(id)
-    return("Deletado")
+    db.delete(id)  
+    db.commit()
     
-@serie.put('/update/{id}')
-async def atualizar_serie(id: int, titulo: str, descricao: str, ano_lancamento: int):
-    result = {'titulo': titulo, 'descrição': descricao, "Ano Lançamento": ano_lancamento}
-    return result                                                                                            
+@serie.put("/{id}")
+async def atualizar_serie(id: int, dados: SerieSchema = Depends(), db: Session = Depends(get_db)):
+    serie_encontrada = db.query(SerieModel).filter(SerieModel.id == id).first()
+
+    if not serie_encontrada:
+        return {"erro": "Série não encontrada"}
+
+    # Atualiza automaticamente só o que você preencheu
+    dados_atualizados = dados.model_dump(exclude_unset=True)
+
+    for chave, valor in dados_atualizados.items():
+        setattr(serie_encontrada, chave, valor)
+
+    db.commit()
+    db.refresh(serie_encontrada)
+    return serie_encontrada
